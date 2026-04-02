@@ -1,47 +1,42 @@
 package az.edu.ada.wm2.lab6.controller;
 
-import az.edu.ada.wm2.lab6.model.Product;
-import az.edu.ada.wm2.lab6.repository.ProductRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import az.edu.ada.wm2.lab6.model.dto.ProductRequestDto;
+import az.edu.ada.wm2.lab6.model.dto.ProductResponseDto;
+import az.edu.ada.wm2.lab6.service.ProductService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 
 @RestController
-@RequestMapping("/products")
+@RequestMapping("/api/products")
+@RequiredArgsConstructor
 public class ProductController {
 
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductService productService;
 
     @GetMapping
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
-    }
-
-    @GetMapping("/{id}")
-    public Product getProductById(@PathVariable UUID id) {
-        return productRepository.findById(id).orElse(null);
+    public ResponseEntity<List<ProductResponseDto>> getAllProducts() {
+        return ResponseEntity.ok(productService.getAllProducts());
     }
 
     @PostMapping
-    public Product createProduct(@RequestBody Product product) {
-        return productRepository.save(product);
+    public ResponseEntity<ProductResponseDto> createProduct(@RequestBody ProductRequestDto dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(productService.createProduct(dto));
     }
 
-    @PutMapping("/{id}")
-    public Product updateProduct(@PathVariable UUID id, @RequestBody Product updatedProduct) {
-        return productRepository.findById(id).map(product -> {
-            product.setProductName(updatedProduct.getProductName());
-            product.setPrice(updatedProduct.getPrice());
-            product.setExpirationDate(updatedProduct.getExpirationDate());
-            return productRepository.save(product);
-        }).orElse(null);
+    @GetMapping("/expiring-before")
+    public ResponseEntity<List<ProductResponseDto>> getProductsExpiringBefore(@RequestParam LocalDate date) {
+        return ResponseEntity.ok(productService.getProductsExpiringBefore(date));
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteProduct(@PathVariable UUID id) {
-        productRepository.deleteById(id);
+    @GetMapping("/price-range")
+    public ResponseEntity<List<ProductResponseDto>> getProductsByPriceRange(
+            @RequestParam BigDecimal minPrice, @RequestParam BigDecimal maxPrice) {
+        return ResponseEntity.ok(productService.getProductsByPriceRange(minPrice, maxPrice));
     }
 }
