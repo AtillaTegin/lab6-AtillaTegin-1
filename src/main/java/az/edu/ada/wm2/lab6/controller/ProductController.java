@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/products")
@@ -20,7 +21,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public Product getProductById(@PathVariable Long id) {
+    public Product getProductById(@PathVariable UUID id) {
         return productRepository.findById(id).orElse(null);
     }
 
@@ -30,16 +31,17 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public Product updateProduct(@PathVariable Long id, @RequestBody Product updatedProduct) {
+    public Product updateProduct(@PathVariable UUID id, @RequestBody Product updatedProduct) {
         return productRepository.findById(id).map(product -> {
-            product.setName(updatedProduct.getName());
+            product.setProductName(updatedProduct.getProductName());
             product.setPrice(updatedProduct.getPrice());
+            product.setExpirationDate(updatedProduct.getExpirationDate());
             return productRepository.save(product);
         }).orElse(null);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteProduct(@PathVariable Long id) {
+    public void deleteProduct(@PathVariable UUID id) {
         productRepository.deleteById(id);
     }
 }

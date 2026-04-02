@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
@@ -28,32 +29,32 @@ class ProductServiceImplTest {
     @Test
     void createProduct_shouldSaveAndReturnEntity() {
         Product product = new Product();
-        product.setName("Milk");
+        product.setProductName("Milk");
         product.setPrice(BigDecimal.TEN);
 
         Product savedProduct = new Product();
-        savedProduct.setId(1L);
-        savedProduct.setName("Milk");
+        savedProduct.setId(UUID.randomUUID());
+        savedProduct.setProductName("Milk");
         savedProduct.setPrice(BigDecimal.TEN);
 
         when(productRepository.save(product)).thenReturn(savedProduct);
 
         Product result = productService.createProduct(product);
 
-        assertEquals(1L, result.getId());
+        assertEquals(savedProduct.getId(), result.getId());
         verify(productRepository).save(product);
     }
 
     @Test
     void getProductsByPriceRange_shouldReturnFiltered() {
         Product firstProduct = new Product();
-        firstProduct.setId(1L);
-        firstProduct.setName("Milk");
+        firstProduct.setId(UUID.randomUUID());
+        firstProduct.setProductName("Milk");
         firstProduct.setPrice(BigDecimal.TEN);
 
         Product secondProduct = new Product();
-        secondProduct.setId(2L);
-        secondProduct.setName("Bread");
+        secondProduct.setId(UUID.randomUUID());
+        secondProduct.setProductName("Bread");
         secondProduct.setPrice(BigDecimal.ONE);
 
         when(productRepository.findAll()).thenReturn(List.of(firstProduct, secondProduct));

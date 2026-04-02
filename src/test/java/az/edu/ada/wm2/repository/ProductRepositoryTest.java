@@ -22,7 +22,7 @@ class ProductRepositoryTest {
     @Test
         void save_shouldPersistProduct() {
                 Product product = new Product();
-                product.setName("Milk");
+                product.setProductName("Milk");
                 product.setPrice(BigDecimal.TEN);
 
                 Product savedProduct = productRepository.save(product);
@@ -30,6 +30,6 @@ class ProductRepositoryTest {
 
                 assertNotNull(savedProduct.getId());
                 assertEquals(1, products.size());
-                assertEquals("Milk", products.get(0).getName());
+                assertEquals("Milk", products.get(0).getProductName());
     }
 }
